@@ -5,7 +5,7 @@ import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 
-st.set_page_config(page_title="Rishi's Home Guardian", page_icon="🛡️", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Rishi's Home Guardian", page_icon="🛡️", layout="wide", initial_sidebar_state="auto")
 
 LPG_MOD, LPG_CRIT = 150, 300
 TEMP_MOD, TEMP_CRIT = 38, 48
@@ -27,16 +27,21 @@ def get_hyderabad_weather():
 
 st.markdown("""
 <style>
-.app-header { display:flex; align-items:center; gap:14px; padding:14px 20px; border-radius:14px; margin-bottom:14px; box-shadow:0 4px 16px rgba(15,23,42,0.2); }
+.app-header { display:flex; align-items:center; gap:12px; padding:12px 16px; border-radius:14px; margin-bottom:12px; box-shadow:0 4px 16px rgba(15,23,42,0.2); flex-wrap:wrap; }
 .app-header, .app-header * { color: #f8fafc !important; }
 .hdr-safe { background: linear-gradient(90deg, #0f172a, #064e3b); border: 1px solid #10b981; }
 .hdr-mod  { background: linear-gradient(90deg, #451a03, #78350f); border: 1px solid #f59e0b; }
 .hdr-crit { background: linear-gradient(90deg, #450a0a, #7f1d1d); border: 1px solid #ef4444; }
-.app-logo { font-size:2rem; background:rgba(255,255,255,0.12); padding:8px 14px; border-radius:12px; }
-div[data-testid="stMetric"] { background:linear-gradient(135deg,#0f172a,#1e293b); border:1px solid rgba(56,189,248,0.35); padding:14px 18px; border-radius:12px; }
+.app-logo { font-size:1.8rem; background:rgba(255,255,255,0.12); padding:6px 12px; border-radius:12px; }
+div[data-testid="stMetric"] { background:linear-gradient(135deg,#0f172a,#1e293b); border:1px solid rgba(56,189,248,0.35); padding:12px 16px; border-radius:12px; }
 div[data-testid="stMetric"] label, div[data-testid="stMetric"] div[data-testid="stMetricValue"] { color:#f8fafc !important; }
-div[role="radiogroup"] { gap:8px; background:rgba(148,163,184,0.14); padding:6px; border-radius:12px; }
-div[role="radiogroup"] > label { background:transparent; padding:6px 14px; border-radius:8px; margin:0 !important; }
+div[role="radiogroup"] { gap:6px; background:rgba(148,163,184,0.14); padding:6px; border-radius:12px; flex-wrap:wrap; }
+div[role="radiogroup"] > label { background:transparent; padding:6px 12px; border-radius:8px; margin:0 !important; }
+@media (max-width: 640px) {
+    .app-header { padding:10px 12px; }
+    .app-logo { font-size:1.4rem; padding:5px 10px; }
+    div[role="radiogroup"] > label { padding:4px 8px; font-size:0.85rem; }
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -150,17 +155,17 @@ st.markdown(f"""
 <div class="app-header {hdr_cls}">
     <div class="app-logo">🛡️</div>
     <div>
-        <div style="font-size:1.3rem; font-weight:700;">{st.session_state.client['name']}'s Home Guardian 1BHK — Life-Safety Intelligence</div>
-        <div style="font-size:0.88rem; opacity:0.92;">
+        <div style="font-size:1.2rem; font-weight:700;">{st.session_state.client['name']}'s Home Guardian 1BHK</div>
+        <div style="font-size:0.84rem; opacity:0.92;">
             Stage: <b>{status_txt}</b> • Gas: <b>{lpg} ppm ({lpg_stage})</b> • Temp: <b>{kitchen_temp}°C ({temp_stage})</b> • Flood: <b>{flood_cm} cm ({flood_stage})</b> • Load: <b>{total_watts} W ({current_a} A)</b>
         </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-page = st.radio("Navigation", ["🏠 3D 1BHK House", "📊 Overview", "⚡ Power", "🔌 Controls", "🚨 Emergency", "📼 Black Box"], horizontal=True, label_visibility="collapsed")
+page = st.radio("Navigation", ["🏠 3D House", "📊 Overview", "⚡ Power", "🔌 Controls", "🚨 Emergency", "📼 Black Box"], horizontal=True, label_visibility="collapsed")
 
-if page == "🏠 3D 1BHK House":
+if page == "🏠 3D House":
     col_view, col_panel = st.columns([2.35, 1])
     with col_panel:
         st.subheader("💡 Room Appliances")
@@ -188,20 +193,20 @@ if page == "🏠 3D 1BHK House":
             "valveOpen": st.session_state.circuits["LPG Solenoid Valve"], "mainOn": main_on, "totalWatts": total_watts, "currentA": current_a,
         })
         html_3d = """
-        <div id="wrap" style="position:relative;width:100%;height:540px;border-radius:14px;overflow:hidden;border:1px solid rgba(56,189,248,0.4);background:#070d19;font-family:system-ui,sans-serif;">
-          <div style="position:absolute;top:12px;left:12px;z-index:10;display:flex;gap:6px;flex-wrap:wrap;">
-            <button onclick="setCam(11,12,13,0,0,0)" style="background:#1e293b;color:#e2e8f0;border:1px solid #38bdf8;padding:5px 10px;border-radius:8px;cursor:pointer;font-size:12px;">🏠 3D View</button>
-            <button onclick="setCam(0,17,0.1,0,0,0)" style="background:#1e293b;color:#e2e8f0;border:1px solid #475569;padding:5px 10px;border-radius:8px;cursor:pointer;font-size:12px;">📐 Top Blueprint</button>
-            <button onclick="setCam(-2.5,2.2,1.6,-2.5,1.15,4.78)" style="background:#1e293b;color:#e2e8f0;border:1px solid #a855f7;padding:5px 10px;border-radius:8px;cursor:pointer;font-size:12px;">📺 Watch TV</button>
-            <button onclick="setCam(-2.5,6.5,-9,-2.5,0.5,-3.2)" style="background:#1e293b;color:#e2e8f0;border:1px solid #475569;padding:5px 10px;border-radius:8px;cursor:pointer;font-size:12px;">🛏️ Bedroom</button>
-            <button onclick="setCam(9.5,6.5,6.5,3.7,0.5,1.2)" style="background:#1e293b;color:#e2e8f0;border:1px solid #475569;padding:5px 10px;border-radius:8px;cursor:pointer;font-size:12px;">🍳 Kitchen</button>
+        <div id="wrap" style="position:relative;width:100%;height:520px;border-radius:14px;overflow:hidden;border:1px solid rgba(56,189,248,0.4);background:#070d19;font-family:system-ui,sans-serif;touch-action:none;">
+          <div style="position:absolute;top:10px;left:10px;z-index:10;display:flex;gap:5px;flex-wrap:wrap;max-width:65%;">
+            <button onclick="setCam(11,12,13,0,0,0)" style="background:#1e293b;color:#e2e8f0;border:1px solid #38bdf8;padding:4px 8px;border-radius:8px;cursor:pointer;font-size:11px;">🏠 3D</button>
+            <button onclick="setCam(0,17,0.1,0,0,0)" style="background:#1e293b;color:#e2e8f0;border:1px solid #475569;padding:4px 8px;border-radius:8px;cursor:pointer;font-size:11px;">📐 Top</button>
+            <button onclick="setCam(-2.5,2.2,1.6,-2.5,1.15,4.78)" style="background:#1e293b;color:#e2e8f0;border:1px solid #a855f7;padding:4px 8px;border-radius:8px;cursor:pointer;font-size:11px;">📺 TV</button>
+            <button onclick="setCam(-2.5,6.5,-9,-2.5,0.5,-3.2)" style="background:#1e293b;color:#e2e8f0;border:1px solid #475569;padding:4px 8px;border-radius:8px;cursor:pointer;font-size:11px;">🛏️ Bed</button>
+            <button onclick="setCam(9.5,6.5,6.5,3.7,0.5,1.2)" style="background:#1e293b;color:#e2e8f0;border:1px solid #475569;padding:4px 8px;border-radius:8px;cursor:pointer;font-size:11px;">🍳 Kitchen</button>
           </div>
-          <div id="live-ticker" style="position:absolute;top:12px;right:12px;z-index:10;background:rgba(15,23,42,0.9);border:1px solid rgba(0,212,170,0.45);color:#e2e8f0;padding:8px 12px;border-radius:10px;font-size:12px;text-align:right;">
-            <div style="color:#00d4aa;font-weight:700;">● LIVE 1BHK & SAFETY</div>
-            <div id="tick-val">__TOTAL__ W • __AMPS__ A • 230 V</div>
+          <div id="live-ticker" style="position:absolute;top:10px;right:10px;z-index:10;background:rgba(15,23,42,0.9);border:1px solid rgba(0,212,170,0.45);color:#e2e8f0;padding:6px 10px;border-radius:10px;font-size:11px;text-align:right;">
+            <div style="color:#00d4aa;font-weight:700;">● LIVE</div>
+            <div id="tick-val">__TOTAL__ W • __AMPS__ A</div>
           </div>
-          <div id="inspector" style="position:absolute;bottom:12px;left:12px;z-index:10;background:rgba(15,23,42,0.92);border:1px solid rgba(56,189,248,0.4);color:#e2e8f0;padding:10px 14px;border-radius:10px;font-size:13px;max-width:390px;">
-            <b>🖱️ Click or hover any device or sensor</b><br><span style="opacity:0.75;">Simulates 3-stage gas leaks, ELCB faults & Short-Circuit fire sparks</span>
+          <div id="inspector" style="position:absolute;bottom:10px;left:10px;right:10px;z-index:10;background:rgba(15,23,42,0.92);border:1px solid rgba(56,189,248,0.4);color:#e2e8f0;padding:8px 12px;border-radius:10px;font-size:12px;max-width:390px;">
+            <b>🖱️ Tap or hover any device</b> • Drag/pinch to rotate & zoom
           </div>
           <div id="labels-layer" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;"></div>
         </div>
@@ -209,10 +214,13 @@ if page == "🏠 3D 1BHK House":
         <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
         <script>
         const DATA=__PAYLOAD__,wrap=document.getElementById("wrap"),inspector=document.getElementById("inspector"),labelsLayer=document.getElementById("labels-layer"),tickVal=document.getElementById("tick-val");
+        let viewH = window.innerWidth < 640 ? 360 : 520;
+        wrap.style.height = viewH + "px";
+        try { if(window.frameElement) window.frameElement.style.height = (viewH + 15) + "px"; } catch(e){}
         const scene=new THREE.Scene(),isStorm=DATA.weather!=="Clear Sky";scene.background=new THREE.Color(isStorm?0x060b16:0x0c192c);
-        const initW=wrap.clientWidth||720,camera=new THREE.PerspectiveCamera(45,initW/540,0.1,100),renderer=new THREE.WebGLRenderer({antialias:true});
-        renderer.setSize(initW,540);wrap.appendChild(renderer.domElement);
-        new ResizeObserver(()=>{const w=wrap.clientWidth;if(w>0){camera.aspect=w/540;camera.updateProjectionMatrix();renderer.setSize(w,540);}}).observe(wrap);
+        const initW=wrap.clientWidth||360,camera=new THREE.PerspectiveCamera(45,initW/viewH,0.1,100),renderer=new THREE.WebGLRenderer({antialias:true});
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));renderer.setSize(initW,viewH);wrap.appendChild(renderer.domElement);
+        new ResizeObserver(()=>{const w=wrap.clientWidth;viewH=window.innerWidth<640?360:520;wrap.style.height=viewH+"px";try{if(window.frameElement)window.frameElement.style.height=(viewH+15)+"px";}catch(e){}if(w>0){camera.aspect=w/viewH;camera.updateProjectionMatrix();renderer.setSize(w,viewH);}}).observe(wrap);
         const controls=new THREE.OrbitControls(camera,renderer.domElement);controls.enableDamping=true;
         function saveCam(){try{localStorage.setItem("hg_cam_v1",JSON.stringify({px:camera.position.x,py:camera.position.y,pz:camera.position.z,tx:controls.target.x,ty:controls.target.y,tz:controls.target.z}));}catch(e){}}
         let restored=false;try{const s=JSON.parse(localStorage.getItem("hg_cam_v1"));if(s&&typeof s.px==="number"){camera.position.set(s.px,s.py,s.pz);controls.target.set(s.tx,s.ty,s.tz);controls.update();restored=true;}}catch(e){}
@@ -254,10 +262,10 @@ if page == "🏠 3D 1BHK House":
             else{mesh=new THREE.Mesh(item.type==="tube"?new THREE.BoxGeometry(1.3,0.1,0.1):new THREE.SphereGeometry(0.18,12,12),mat);mesh.position.set(item.pos[0],item.pos[1],item.pos[2]);scene.add(mesh);if(item.on&&(item.type==="tube"||item.type==="bulb")){const pl=new THREE.PointLight(0xfef9c3,0.65,5.5);pl.position.set(item.pos[0],item.pos[1]-0.2,item.pos[2]);scene.add(pl);}}
             mesh.userData={title:item.name,room:item.room,detail:item.on?`ACTIVE • ${item.watts} W (${item.amps} A)`:"OFF / TRIPPED",power:item.on?`Est. ₹${((item.watts/1000)*7).toFixed(2)}/hr`:"Idle"};interactables.push(mesh);
         });
-        const labelEls=DATA.rooms.map(r=>{const el=document.createElement("div");el.style.cssText="position:absolute;transform:translate(-50%,-50%);background:rgba(15,23,42,0.88);border:1px solid rgba(56,189,248,0.45);color:#f8fafc;padding:3px 7px;border-radius:7px;font-size:10.5px;white-space:nowrap;";el.innerHTML=`<b>${r.name}</b> • <span style="color:#00d4aa;">${r.watts}W</span> • ${r.temp}°C`;labelsLayer.appendChild(el);return{el,pos:new THREE.Vector3(r.x,r.y,r.z)};});
+        const labelEls=DATA.rooms.map(r=>{const el=document.createElement("div");el.style.cssText="position:absolute;transform:translate(-50%,-50%);background:rgba(15,23,42,0.88);border:1px solid rgba(56,189,248,0.45);color:#f8fafc;padding:2px 6px;border-radius:6px;font-size:10px;white-space:nowrap;";el.innerHTML=`<b>${r.name}</b> • <span style="color:#00d4aa;">${r.watts}W</span> • ${r.temp}°C`;labelsLayer.appendChild(el);return{el,pos:new THREE.Vector3(r.x,r.y,r.z)};});
         const raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2();
-        function inspectAt(e){const r=renderer.domElement.getBoundingClientRect();mouse.x=((e.clientX-r.left)/r.width)*2-1;mouse.y=-((e.clientY-r.top)/r.height)*2+1;raycaster.setFromCamera(mouse,camera);const h=raycaster.intersectObjects(interactables);if(h.length){const d=h[0].object.userData;inspector.innerHTML=`<b>${d.room} • ${d.title}</b><br><span style="color:#38bdf8;">${d.detail}</span> • ${d.power}`;}}
-        wrap.addEventListener("mousemove",inspectAt);wrap.addEventListener("click",inspectAt);
+        function inspectAt(e){const cx=e.touches?e.touches[0].clientX:e.clientX,cy=e.touches?e.touches[0].clientY:e.clientY,r=renderer.domElement.getBoundingClientRect();mouse.x=((cx-r.left)/r.width)*2-1;mouse.y=-((cy-r.top)/r.height)*2+1;raycaster.setFromCamera(mouse,camera);const h=raycaster.intersectObjects(interactables);if(h.length){const d=h[0].object.userData;inspector.innerHTML=`<b>${d.room} • ${d.title}</b><br><span style="color:#38bdf8;">${d.detail}</span> • ${d.power}`;}}
+        wrap.addEventListener("mousemove",inspectAt);wrap.addEventListener("click",inspectAt);wrap.addEventListener("touchstart",inspectAt,{passive:true});
         setInterval(()=>{const v=DATA.mainOn?(229+Math.floor(Math.random()*3)):0;tickVal.textContent=`${DATA.totalWatts} W • ${DATA.currentA} A • ${v} V`;},1500);
         let clockT=0;
         function animate(){
@@ -268,13 +276,13 @@ if page == "🏠 3D 1BHK House":
             if(gasGeo){const a=gasGeo.attributes.position.array;for(let i=0;i<a.length;i+=3){a[i]+=(Math.random()-0.5)*0.04;a[i+1]+=0.02;a[i+2]+=(Math.random()-0.5)*0.04;if(a[i+1]>gasOrigin[1]+1.5){a[i]=gasOrigin[0]+(Math.random()-0.5)*0.4;a[i+1]=gasOrigin[1];a[i+2]=gasOrigin[2]+(Math.random()-0.5)*0.4;}}gasGeo.attributes.position.needsUpdate=true;}
             if(sparkGeo){const a=sparkGeo.attributes.position.array;for(let i=0;i<a.length;i+=3){a[i]+=(Math.random()-0.5)*0.18;a[i+1]+=Math.random()*0.12-0.03;a[i+2]+=(Math.random()-0.5)*0.18;if(Math.random()<0.12){a[i]=sparkOrigin[0];a[i+1]=sparkOrigin[1];a[i+2]=sparkOrigin[2];}}sparkGeo.attributes.position.needsUpdate=true;if(sparkLight)sparkLight.intensity=1.5+Math.random()*3.0;}
             if(rainGeo){const a=rainGeo.attributes.position.array;for(let i=1;i<a.length;i+=3){a[i]-=0.22;if(a[i]<0)a[i]=10;}rainGeo.attributes.position.needsUpdate=true;}
-            controls.update();const w=wrap.clientWidth;if(w>0)labelEls.forEach(it=>{const p=it.pos.clone().project(camera);if(p.z<1){it.el.style.display="block";it.el.style.left=((p.x*0.5+0.5)*w)+"px";it.el.style.top=((-p.y*0.5+0.5)*540)+"px";}else it.el.style.display="none";});
+            controls.update();const w=wrap.clientWidth;if(w>0)labelEls.forEach(it=>{const p=it.pos.clone().project(camera);if(p.z<1){it.el.style.display="block";it.el.style.left=((p.x*0.5+0.5)*w)+"px";it.el.style.top=((-p.y*0.5+0.5)*viewH)+"px";}else it.el.style.display="none";});
             renderer.render(scene,camera);
         }
         animate();
         </script>
         """.replace("__PAYLOAD__", payload).replace("__TOTAL__", str(total_watts)).replace("__AMPS__", str(current_a))
-        components.html(html_3d, height=555)
+        components.html(html_3d, height=535)
 
 elif page == "📊 Overview":
     st.progress(risk_score / 100, text=f"Overall Residential Hazard Risk: {risk_score}%")
